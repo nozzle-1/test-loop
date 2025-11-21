@@ -1,0 +1,69 @@
+name: Publish Extension
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Version bump (major, minor, patch)"
+        required: false
+        default: "patch"
+  push:
+    branches: ["main"]
+
+jobs:
+  publish:
+    # avoid recursive runs when the action pushes commits/tags
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # allow push back to repo
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run compile
+
+      - name: Determine bump
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "bump=${{ github.event.inputs.bump }}" >> $GITHUB_OUTPUT
+          else
+            echo "bump=patch" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Generate changelog and bump version
+        run: |
+          echo "Generating changelog and bumping version: ${{ steps.vars.outputs.bump }}"
+          npx standard-version --release-as "${{ steps.vars.outputs.bump }}"
+
+      - name: Push changes and tags
+        run: |
+          git push origin HEAD:main
+          git push --follow-tags origin main
+
+      - name: Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+        run: |
+          if [ -z "$VSCE_PAT" ]; then
+            echo "VSCE_TOKEN secret not set; skipping publish"
+            exit 1
+          fi
+          npx vsce publish --pat "$VSCE_PAT"
