@@ -2,7 +2,7 @@
   "name": "test-loop",
   "displayName": "Test Loop",
   "description": "Automatically re-runs your unit tests whenever you modify your source code or test files.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "MIT",
   "icon": "docs/logo.png",
   "publisher": "nozzle-1",
