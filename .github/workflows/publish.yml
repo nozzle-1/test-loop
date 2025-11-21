@@ -7,11 +7,11 @@ on:
         description: "Version bump (major, minor, patch)"
         required: false
         default: "patch"
-  push:
-    branches: ["main"]
 
 jobs:
   publish:
+    permissions:
+      contents: write
     # avoid recursive runs when the action pushes commits/tags
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
@@ -45,6 +45,12 @@ jobs:
 
       - name: Configure git
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Configure git auth for pushes
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
