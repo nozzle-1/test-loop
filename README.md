@@ -37,7 +37,6 @@ Test Loop works with most programming languages and testing frameworks by lettin
 All options are configurable in your User or Workspace `settings.json`. The main settings are:
 
 - `test-loop.ignorePatterns` (array[string]) — Default list of folders/subpaths to ignore (OS, build and cache directories). Example defaults include `node_modules`, `.dart_tool`, `build`, `.git`, `.vscode`, `.DS_Store`, etc.
-- `test-loop.extraIgnorePatterns` (array[string]) — Additional patterns appended to the ignore list.
 - `test-loop.cooldownMs` (number) — Milliseconds to wait after a run finishes before accepting new events (default: 200). Helps avoid runs triggered by generated artifacts.
 - `test-loop.debounceMs` (number) — Debounce time after a file change before starting a run (default: 300).
 
