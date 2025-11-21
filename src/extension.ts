@@ -105,6 +105,11 @@ class TestWatcher implements vscode.Disposable {
 		'dart', 'ts', 'tsx', 'js', 'jsx', 'py', 'java', 'kt', 'kts', 'swift', 'rs', 'go', 'c', 'cpp', 'cs', 'php', 'rb', 'm', 'mm', 'scala', 'hs'
 	]);
 
+
+	private formatStatusBarText(text: string): string {
+		return `Test Loop: ${text}`;
+	}
+
 	private isTestPath(path: string): boolean {
 		const p = path.replace(/\\/g, '/');
 		const filename = p.split('/').pop() || '';
@@ -160,7 +165,7 @@ class TestWatcher implements vscode.Disposable {
 		this.disposables.push(this.configDisposable);
 
 		this.statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-		this.statusBar.text = 'Test Loop: Off';
+		this.statusBar.text = this.formatStatusBarText('Off');
 		this.statusBar.command = 'test-loop.toggleWatch';
 		this.statusBar.tooltip = 'Toggle Test Loop';
 		this.statusBar.show();
@@ -184,7 +189,7 @@ class TestWatcher implements vscode.Disposable {
 
 		this.running = true;
 
-		this.statusBar.text = 'Test Watch: On';
+		this.statusBar.text = this.formatStatusBarText('On');
 
 		this.fileWatcher = vscode.workspace.createFileSystemWatcher('**/*', true);
 
@@ -240,7 +245,7 @@ class TestWatcher implements vscode.Disposable {
 			return;
 		}
 		this.running = false;
-		this.statusBar.text = 'Test Loop: Off';
+		this.statusBar.text = this.formatStatusBarText('Off');
 
 		if (this.fileWatcher) {
 			this.fileWatcher.dispose();
