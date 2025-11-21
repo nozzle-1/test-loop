@@ -1,71 +1,62 @@
-# test-watcher README
+<p align="center">
+  <img src="./docs/banner.png" alt="Test Loop banner" style="max-width:300px;width:100%;height:auto;" />
+</p>
 
-This is the README for your extension "test-watcher". After writing up a brief description, we recommend including the following sections.
+# Test Loop — Automatic Test Execution for VS Code
 
-## Features
+**Test Loop** is a Visual Studio Code extension that automatically re-runs your unit tests whenever you modify your source code or test files.  
+It is designed for an efficient Test‑Driven Development (TDD) workflow and is inspired by the *Live Unit Testing* feature available in Visual Studio 2022.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Test Loop works with most programming languages and testing frameworks by letting you define the command used to run your tests.
 
-For example if there is an image subfolder under your extension project workspace:
+### Quick highlights
 
-\!\[feature X\]\(images/feature-x.png\)
+- **Status bar item**: shows `Test Loop: On/Off` and toggles the watcher.
+- **Commands**: run via the Command Palette: `Test Loop: Toggle`
+- **Configurable**: full control via `test-loop.ignorePatterns`, `test-loop.cooldownMs`, and `test-loop.debounceMs`.
+- **Smart filtering**: ignores common build/cache folders by default to avoid loops (configurable).
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+**Note:** Test Loop relies on VS Code's testing commands (`testing.runAll` / `testing.run`) and the installed test adapters. If those are not available the extension will show a warning.
 
-## Requirements
+## Table of contents
+- **Usage** — how to start and stop the watcher
+- **Configuration** — settings you can tune
+- **How it works** — internal behavior and tips
+- **Troubleshooting** — common issues (hot reload / loops)
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Usage
 
-## Extension Settings
+- Toggle the watcher from the status bar item (`Test Loop: Off` / `On`) or open the Command Palette and run `Test Loop: Toggle`.
+- The extension is activated at startup and will create the status bar item disabled by default. Use the toggle or the command to start watching.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+**Start the Extension Development Host (for testing)**
+- Press F5 to start an Extension Development Host where you can test the watcher.
 
-For example:
+## Configuration
 
-This extension contributes the following settings:
+All options are configurable in your User or Workspace `settings.json`. The main settings are:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- `test-loop.ignorePatterns` (array[string]) — Default list of folders/subpaths to ignore (OS, build and cache directories). Example defaults include `node_modules`, `.dart_tool`, `build`, `.git`, `.vscode`, `.DS_Store`, etc.
+- `test-loop.extraIgnorePatterns` (array[string]) — Additional patterns appended to the ignore list.
+- `test-loop.cooldownMs` (number) — Milliseconds to wait after a run finishes before accepting new events (default: 200). Helps avoid runs triggered by generated artifacts.
+- `test-loop.debounceMs` (number) — Debounce time after a file change before starting a run (default: 300).
 
-## Known Issues
+Example `settings.json` snippet:
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+```json
+{
+  "test-loop.ignorePatterns": ["node_modules", ".dart_tool", "build"],
+  "test-loop.cooldownMs": 500,
+  "test-loop.debounceMs": 300
+}
+```
 
-## Release Notes
+## Troubleshooting
 
-Users appreciate release notes as you update your extension.
+- If tests are triggered too often, add additional entries to `test-loop.ignorePatterns`.
+- If cancellations do not stop the running test process, that is likely an adapter limitation; consider increasing `cooldownMs` to reduce churn.
 
-### 1.0.0
 
-Initial release of ...
+## Contributing
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Contributions and issues are welcome. Please open issues or pull requests on the repository.

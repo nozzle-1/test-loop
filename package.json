@@ -1,6 +1,6 @@
 {
-  "name": "test-watcher",
-  "displayName": "test-watcher",
+  "name": "test-loop",
+  "displayName": "test-loop",
   "description": "Run tests in watch mode for multiple languages",
   "version": "0.0.1",
   "engines": {
@@ -9,15 +9,81 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "test-watcher.helloWorld",
-        "title": "Hello World"
+        "command": "test-loop.toggleWatch",
+        "title": "Test Loop: Toggle"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Test Loop",
+      "properties": {
+        "test-loop.ignorePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "node_modules",
+            "bower_components",
+            "/out/",
+            "/dist/",
+            "/build/",
+            "/bin/",
+            "/obj/",
+            "/target/",
+            "/release/",
+            "/debug/",
+            ".git/",
+            ".vscode/",
+            ".idea/",
+            ".dart_tool",
+            ".gradle/",
+            ".pytest_cache",
+            "__pycache__",
+            ".mypy_cache",
+            ".venv",
+            "/venv/",
+            "/env/",
+            ".cache",
+            ".nyc_output",
+            "coverage",
+            "test-results",
+            "reports",
+            ".sass-cache",
+            ".parcel-cache",
+            ".next",
+            ".nuxt",
+            ".turbo",
+            ".history",
+            ".DS_Store",
+            "__MACOSX",
+            "Thumbs.db",
+            "desktop.ini",
+            "$RECYCLE.BIN",
+            "lost+found",
+            "System Volume Information",
+            ".idea/workspace.xml"
+          ],
+          "description": "Default ignore patterns for file watching. Can be customized in User or Workspace settings."
+        },
+        "test-loop.cooldownMs": {
+          "type": "number",
+          "default": 200,
+          "description": "Cooldown in milliseconds after a test run finishes during which file events are ignored to avoid triggering runs from generated artifacts."
+        },
+        "test-loop.debounceMs": {
+          "type": "number",
+          "default": 300,
+          "description": "Debounce time in milliseconds to wait after a file change before running tests."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
