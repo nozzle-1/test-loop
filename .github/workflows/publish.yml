@@ -64,6 +64,49 @@ jobs:
           git push origin HEAD:main
           git push --follow-tags origin main
 
+      - name: Get new version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract changelog for current version
+        id: changelog
+        run: |
+          # Extract changelog between current version and previous
+          CHANGELOG=$(sed -n "/^## \[${{ steps.version.outputs.version }}\]/,/^## \[/p" CHANGELOG.md | sed '$d')
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Package extension
+        run: |
+          npx vsce package
+          echo "VSIX_PATH=$(ls *.vsix)" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+
+      - name: Upload VSIX to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.VSIX_PATH }}
+          asset_name: ${{ env.VSIX_PATH }}
+          asset_content_type: application/zip
+
       - name: Publish to VS Code Marketplace
         env:
           VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
@@ -72,7 +115,7 @@ jobs:
             echo "VSCE_TOKEN secret not set; skipping publish"
             exit 1
           fi
-          npx vsce publish --pat "$VSCE_PAT"
+          npx vsce publish --packagePath ${{ env.VSIX_PATH }} --pat "$VSCE_PAT"
 
       - name: Publish to Open VSX Marketplace
         env:
@@ -82,4 +125,4 @@ jobs:
             echo "OVSX_TOKEN secret not set; skipping publish"
             exit 1
           fi
-          npx ovsx publish --pat "$OVSX_PAT"
+          npx ovsx publish --packagePath ${{ env.VSIX_PATH }} --pat "$OVSX_PAT"
