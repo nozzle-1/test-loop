@@ -73,3 +73,13 @@ jobs:
             exit 1
           fi
           npx vsce publish --pat "$VSCE_PAT"
+
+      - name: Publish to Open VSX Marketplace
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_TOKEN }}
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "OVSX_TOKEN secret not set; skipping publish"
+            exit 1
+          fi
+          npx ovsx publish --pat "$OVSX_PAT"
