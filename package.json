@@ -1,13 +1,21 @@
 {
   "name": "test-loop",
-  "displayName": "test-loop",
-  "description": "Run tests in watch mode for multiple languages",
-  "version": "0.0.1",
+  "displayName": "Test Loop",
+  "description": "Automatically re-runs your unit tests whenever you modify your source code or test files.",
+  "version": "1.0.0",
+  "license": "MIT",
+  "icon": "docs/logo.png",
+  "publisher": "nozzle-1",
   "engines": {
     "vscode": "^1.106.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nozzle-1/test-loop"
+  },
   "categories": [
-    "Other"
+    "Other",
+    "Testing"
   ],
   "activationEvents": [
     "onStartupFinished"
